@@ -1,0 +1,60 @@
+
+StateDelta { EntityId, State }
+State { int TypeCode }
+
+
+客户端
+Packet { List<StateDelta> Deltas }
+逻辑
+on 收到 packet
+foreach packet.增量s
+if !known.Contains(增量.实体Id)
+    new 实体(增量.状态.TypeCode) // 1, 2, 3...
+    known.Add; pending.Add
+	...
+
+World.Update
+PreUpdate
+foreach 实体s
+    OnStart
+    OnControllerChanged
+    [C]OnFrozen/[C]OnUnfrozen // 可见/不可见
+	if 实体.控制器 == null
+	    [C]UpdateProxy
+	else
+	    [C]UpdateControlGeneric // 设置方向键状态
+		[C]Revert
+		foreach 命令s
+		    ApplyControlGeneric(命令)    
+    PostUpdate
+foreach 需要移除的实体s
+    OnShutdown
+PostUpdate
+
+
+
+
+
+CommandUpdate { EntityId, RollingBuffer<Command> }
+Command { IsNewCommand }
+
+服务端
+Packet { List<CommandUpdate> Updates }
+逻辑
+on 收到 packet
+foreach packet.命令更新s
+if world.TryGet(命令更新.EntityId)
+    foreach 命令更新.命令
+	...
+
+World.Update
+PreUpdate
+foreach 实体s
+    OnStart
+    OnControllerChanged
+    [S]UpdateAuth // 设置位置
+	ApplyControlGeneric(命令)
+    PostUpdate
+foreach 需要移除的实体s
+    OnShutdown
+PostUpdate

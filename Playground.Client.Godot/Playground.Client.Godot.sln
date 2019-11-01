@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29424.173
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground.Client.Godot", "Playground.Client.Godot.csproj", "{3833614D-542C-455B-A716-6B98100E9D53}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Tools|Any CPU = Tools|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3833614D-542C-455B-A716-6B98100E9D53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3833614D-542C-455B-A716-6B98100E9D53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3833614D-542C-455B-A716-6B98100E9D53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3833614D-542C-455B-A716-6B98100E9D53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3833614D-542C-455B-A716-6B98100E9D53}.Tools|Any CPU.ActiveCfg = Tools|Any CPU
+		{3833614D-542C-455B-A716-6B98100E9D53}.Tools|Any CPU.Build.0 = Tools|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CDA85B63-D003-4FFA-BB38-609BFE058E7D}
+	EndGlobalSection
+EndGlobal

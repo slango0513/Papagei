@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Papagei\Papagei.csproj" />
+    <ProjectReference Include="..\MiniUDP\MiniUDP.csproj" />
+    <ProjectReference Include="..\Playground.Common\Playground.Common.csproj" />
+  </ItemGroup>
+
+</Project>

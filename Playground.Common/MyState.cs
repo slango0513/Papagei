@@ -1,0 +1,156 @@
+﻿using Papagei;
+using System;
+
+namespace Playground
+{
+    public class MyState : State
+    {
+        [Flags]
+        public enum Props : uint
+        {
+            // 0x0
+            None = 0,
+            // 0x1
+            X = 1 << 0,
+            // 0x2
+            Y = 1 << 1,
+            // 0x4
+            Angle = 1 << 2,
+            // 0x8
+            Status = 1 << 3,
+
+            All = X | Y | Angle | Status,
+        }
+
+        public override int FlagBits => 4;
+
+        // These should be properties, but we can't pass properties by ref
+        public int ArchetypeId;
+        public int UserId;
+
+        public float X;
+        public float Y;
+        public float Angle;
+        public byte Status;
+
+        public override void Reset()
+        {
+            base.Reset();
+
+            ArchetypeId = 0;
+            UserId = 0;
+            X = 0.0f;
+            Y = 0.0f;
+            Angle = 0.0f;
+            Status = 0;
+        }
+
+        public override void DecodeMutableData(BitBuffer buffer, uint flags)
+        {
+            var _flags = (Props)flags;
+            if (_flags.HasFlag(Props.X))
+            {
+                X = buffer.ReadFloat(GameCompressors.Coordinate);
+            }
+            if (_flags.HasFlag(Props.Y))
+            {
+                Y = buffer.ReadFloat(GameCompressors.Coordinate);
+            }
+            if (_flags.HasFlag(Props.Angle))
+            {
+                Angle = buffer.ReadFloat(GameCompressors.Angle);
+            }
+            if (_flags.HasFlag(Props.Status))
+            {
+                Status = buffer.ReadByte();
+            }
+        }
+        public override void EncodeMutableData(BitBuffer buffer, uint flags)
+        {
+            var _flags = (Props)flags;
+            if (_flags.HasFlag(Props.X))
+            {
+                buffer.WriteFloat(GameCompressors.Coordinate, X);
+            }
+            if (_flags.HasFlag(Props.Y))
+            {
+                buffer.WriteFloat(GameCompressors.Coordinate, Y);
+            }
+            if (_flags.HasFlag(Props.Angle))
+            {
+                buffer.WriteFloat(GameCompressors.Angle, Angle);
+            }
+            if (_flags.HasFlag(Props.Status))
+            {
+                buffer.WriteByte(Status);
+            }
+        }
+        public override void ApplyMutableFrom(State source, uint flags)
+        {
+            var _other = (MyState)source;
+            var _flags = (Props)flags;
+            if (_flags.HasFlag(Props.X))
+            {
+                X = _other.X;
+            }
+            if (_flags.HasFlag(Props.Y))
+            {
+                Y = _other.Y;
+            }
+            if (_flags.HasFlag(Props.Angle))
+            {
+                Angle = _other.Angle;
+            }
+            if (_flags.HasFlag(Props.Status))
+            {
+                Status = _other.Status;
+            }
+        }
+
+        public override void DecodeControllerData(BitBuffer buffer) { }
+        public override void EncodeControllerData(BitBuffer buffer) { }
+        public override void ApplyControllerFrom(State source) { }
+
+        public override void DecodeImmutableData(BitBuffer buffer)
+        {
+            ArchetypeId = buffer.ReadInt();
+            UserId = buffer.ReadInt();
+        }
+        public override void EncodeImmutableData(BitBuffer buffer)
+        {
+            buffer.WriteInt(ArchetypeId);
+            buffer.WriteInt(UserId);
+        }
+        public override void ApplyImmutableFrom(State source)
+        {
+            var _other = (MyState)source;
+            ArchetypeId = _other.ArchetypeId;
+            UserId = _other.UserId;
+        }
+
+        public override void ResetControllerData() { }
+
+        public override uint CompareMutableData(State basis)
+        {
+            var _basis = (MyState)basis;
+            var flags = (!GameMath.CoordinatesEqual(X, _basis.X) ? Props.X : 0)
+                | (!GameMath.CoordinatesEqual(Y, _basis.Y) ? Props.Y : 0)
+                | (!GameMath.AnglesEqual(Angle, _basis.Angle) ? Props.Angle : 0)
+                | (Status != _basis.Status ? Props.Status : 0);
+            return (uint)flags;
+        }
+
+        public override bool IsControllerDataEqual(State basis)
+        {
+            return true;
+        }
+
+        public override void ApplyInterpolated(State first, State second, float t)
+        {
+            var _first = (MyState)first;
+            var _second = (MyState)second;
+            X = GameMath.LerpUnclampedFloat(_first.X, _second.X, t);
+            Y = GameMath.LerpUnclampedFloat(_first.Y, _second.Y, t);
+        }
+    }
+}
