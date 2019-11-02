@@ -1,12 +1,130 @@
-﻿using Papagei;
-using Papagei.Client;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Papagei;
+using Papagei.Client;
 using System;
 using System.Collections.Generic;
 
 namespace Playground.Client
 {
+    public class ClientProtocol : BitBufferClientPacketProtocol
+    {
+        public ClientProtocol(ClientPools pools) : base(pools)
+        {
+        }
+
+        public override void DecodeControllerData(State state)
+        {
+            switch (state)
+            {
+                case MyState state_:
+                    {
+                        break;
+                    }
+                case DummyEntityState state_:
+                    {
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+        public override void DecodeImmutableData(State state)
+        {
+            switch (state)
+            {
+                case MyState state_:
+                    {
+                        state_.ArchetypeId = _buffer.ReadInt();
+                        state_.UserId = _buffer.ReadInt();
+                        break;
+                    }
+                case DummyEntityState state_:
+                    {
+                        state_.ArchetypeId = _buffer.ReadInt();
+                        state_.UserId = _buffer.ReadInt();
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+        public override void DecodeMutableData(uint flags, State state)
+        {
+            switch (state)
+            {
+                case MyState state_:
+                    {
+                        var _flags = (MyState.Props)flags;
+                        if (_flags.HasFlag(MyState.Props.X))
+                        {
+                            state_.X = _buffer.ReadFloat(GameCompressors.Coordinate);
+                        }
+                        if (_flags.HasFlag(MyState.Props.Y))
+                        {
+                            state_.Y = _buffer.ReadFloat(GameCompressors.Coordinate);
+                        }
+                        if (_flags.HasFlag(MyState.Props.Angle))
+                        {
+                            state_.Angle = _buffer.ReadFloat(GameCompressors.Angle);
+                        }
+                        if (_flags.HasFlag(MyState.Props.Status))
+                        {
+                            state_.Status = _buffer.ReadByte();
+                        }
+                        break;
+                    }
+                case DummyEntityState state_:
+                    {
+                        var _flags = (DummyEntityState.Props)flags;
+                        if (_flags.HasFlag(DummyEntityState.Props.X))
+                        {
+                            state_.X = _buffer.ReadFloat(GameCompressors.Coordinate);
+                        }
+                        if (_flags.HasFlag(DummyEntityState.Props.Y))
+                        {
+                            state_.Y = _buffer.ReadFloat(GameCompressors.Coordinate);
+                        }
+                        if (_flags.HasFlag(DummyEntityState.Props.Z))
+                        {
+                            state_.Z = _buffer.ReadFloat(GameCompressors.Coordinate);
+                        }
+                        if (_flags.HasFlag(DummyEntityState.Props.Angle))
+                        {
+                            state_.Angle = _buffer.ReadFloat(GameCompressors.Angle);
+                        }
+                        if (_flags.HasFlag(DummyEntityState.Props.Status))
+                        {
+                            state_.Status = _buffer.ReadByte();
+                        }
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+        public override void EncodeData(Command command)
+        {
+            switch (command)
+            {
+                case GameCommand command_:
+                    {
+                        _buffer.WriteBool(command_.Up);
+                        _buffer.WriteBool(command_.Down);
+                        _buffer.WriteBool(command_.Left);
+                        _buffer.WriteBool(command_.Right);
+                        _buffer.WriteBool(command_.Action);
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+    }
+
     public class ClientWorldHost
     {
         public IServiceProvider ServiceProvider { get; }
@@ -32,7 +150,7 @@ namespace Playground.Client
                 [typeof(ClientMimicEntity)] = typeof(MyState),
             };
             var pools = new ClientPools(commandType, eventTypes, entityTypes);
-            var manager = new ClientWorld(new BitBufferClientPacketProtocol(pools), pools);
+            var manager = new ClientWorld(new ClientProtocol(pools), pools);
             //var manager = new ClientWorld(new MessagePackClientPacketProtocol(), pools);
             services.AddSingleton(manager);
 

@@ -3,9 +3,9 @@ using System.Diagnostics;
 
 namespace Papagei
 {
-    public class BitBufferServerPacketProtocol : IServerPacketProtocol
+    public abstract class BitBufferServerPacketProtocol : IServerPacketProtocol
     {
-        private readonly BitBuffer _buffer = new BitBuffer();
+        protected readonly BitBuffer _buffer = new BitBuffer();
         private readonly ServerPools _pools;
         private readonly byte[] _bytes = new byte[Config.DATA_BUFFER_SIZE];
 
@@ -42,7 +42,7 @@ namespace Papagei
                         command.ClientTick = buffer.ReadTick();
 
                         // Read: [Command Data]
-                        command.DecodeData(buffer);
+                        DecodeData(command);
 
                         update.Commands.Store(command);
                     }
@@ -87,7 +87,7 @@ namespace Papagei
                     // Write: [IsFrozen]
                     buffer.WriteBool(delta.IsFrozen);
 
-                    if (delta.IsFrozen == false)
+                    if (!delta.IsFrozen)
                     {
                         // Write: [FactoryType]
                         var state = delta.State;
@@ -115,12 +115,12 @@ namespace Papagei
                             buffer.Write(state.FlagBits, state.Flags);
 
                             // Write: [Mutable Data]
-                            state.EncodeMutableData(buffer, state.Flags);
+                            EncodeMutableData(state.Flags, state);
 
                             if (state.HasControllerData)
                             {
                                 // Write: [Controller Data]
-                                state.EncodeControllerData(buffer);
+                                EncodeControllerData(state);
 
                                 // Write: [Command Ack]
                                 buffer.WriteTick(state.CommandAck);
@@ -129,7 +129,7 @@ namespace Papagei
                             if (state.HasImmutableData)
                             {
                                 // Write: [Immutable Data]
-                                state.EncodeImmutableData(buffer);
+                                EncodeImmutableData(state);
                             }
                         }
                     }
@@ -139,5 +139,11 @@ namespace Papagei
             Debug.Assert(length <= Config.PACKCAP_MESSAGE_TOTAL);
             return (_bytes, length);
         }
+
+        public abstract void EncodeMutableData(uint flags, State state);
+        public abstract void EncodeControllerData(State state);
+        public abstract void EncodeImmutableData(State state);
+
+        public abstract void DecodeData(Command command);
     }
 }

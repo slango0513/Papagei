@@ -26,20 +26,6 @@ namespace Playground
             Action = action;
         }
 
-        public override void EncodeData(BitBuffer buffer)
-        {
-            buffer.WriteBool(Up);
-            buffer.WriteBool(Down);
-            buffer.WriteBool(Left);
-            buffer.WriteBool(Right);
-            buffer.WriteBool(Action);
-        }
-
-        public override void DecodeData(BitBuffer buffer)
-        {
-            SetData(buffer.ReadBool(), buffer.ReadBool(), buffer.ReadBool(), buffer.ReadBool(), buffer.ReadBool());
-        }
-
         public override void SetDataFrom(Command other)
         {
             var _other = (GameCommand)other;

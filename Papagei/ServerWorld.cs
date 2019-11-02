@@ -63,7 +63,7 @@ namespace Papagei
                 // ServerConnection.ctor
                 controller.Connection.PayloadReceived += (data, length) =>
                 {
-                    Console.WriteLine($"data {data.Length} length {length}"); // 253 245
+                    //Console.WriteLine($"data {data.Length} length {length}"); // 253 245
                     var reusableIncoming = _protocol.Decode(data, length);
                     if (reusableIncoming != default)
                     {
@@ -248,7 +248,7 @@ namespace Papagei
                         var latestCommandTick = entity.Controller.EstimatedRemoteTick;
                         // Use the remote tick rather than the last applied tick
                         // because we might be skipping some commands to keep up
-                        var shouldAck = (entity.CommandAck.IsValid == false) || (latestCommandTick > entity.CommandAck);
+                        var shouldAck = !entity.CommandAck.IsValid || (latestCommandTick > entity.CommandAck);
                         if (shouldAck)
                         {
                             entity.CommandAck = latestCommandTick;

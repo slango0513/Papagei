@@ -32,12 +32,12 @@
 
         public void UpdateLatest(Tick latestTick)
         {
-            if (LatestRemote.IsValid == false)
+            if (!LatestRemote.IsValid)
             {
                 LatestRemote = latestTick;
             }
 
-            if (EstimatedRemote.IsValid == false)
+            if (!EstimatedRemote.IsValid)
             {
                 EstimatedRemote = Tick.Subtract(LatestRemote, _delayDesired);
             }
@@ -63,7 +63,7 @@
             }
 
             EstimatedRemote += 1;
-            if (shouldUpdateEstimate == false)
+            if (!shouldUpdateEstimate)
             {
                 return; // 1;
             }

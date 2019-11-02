@@ -2,9 +2,9 @@
 
 namespace Papagei.Client
 {
-    public class BitBufferClientPacketProtocol : IClientPacketProtocol
+    public abstract class BitBufferClientPacketProtocol : IClientPacketProtocol
     {
-        private readonly BitBuffer _buffer = new BitBuffer();
+        protected readonly BitBuffer _buffer = new BitBuffer();
         private readonly ClientPools _pools;
         private readonly byte[] _bytes = new byte[Config.DATA_BUFFER_SIZE];
 
@@ -34,7 +34,7 @@ namespace Papagei.Client
                     // Read: [IsFrozen]
                     var isFrozen = buffer.ReadBool();
 
-                    if (isFrozen == false)
+                    if (!isFrozen)
                     {
                         // Read: [FactoryType]
                         var typeCode = buffer.ReadInt(_pools.EntityTypeCompressor);
@@ -62,12 +62,12 @@ namespace Papagei.Client
                             state.Flags = buffer.Read(state.FlagBits);
 
                             // Read: [Mutable Data]
-                            state.DecodeMutableData(buffer, state.Flags);
+                            DecodeMutableData(state.Flags, state);
 
                             if (state.HasControllerData)
                             {
                                 // Read: [Controller Data]
-                                state.DecodeControllerData(buffer);
+                                DecodeControllerData(state);
 
                                 // Read: [Command Ack]
                                 state.CommandAck = buffer.ReadTick();
@@ -76,7 +76,7 @@ namespace Papagei.Client
                             if (state.HasImmutableData)
                             {
                                 // Read: [Immutable Data]
-                                state.DecodeImmutableData(buffer);
+                                DecodeImmutableData(state);
                             }
                         }
                     }
@@ -119,7 +119,7 @@ namespace Papagei.Client
                         buffer.WriteTick(command.ClientTick);
 
                         // Write: [Command Data]
-                        command.EncodeData(buffer);
+                        EncodeData(command);
                     }
                 });
 
@@ -136,5 +136,11 @@ namespace Papagei.Client
             Debug.Assert(length <= Config.PACKCAP_MESSAGE_TOTAL);
             return (_bytes, length);
         }
+
+        public abstract void DecodeMutableData(uint flags, State state);
+        public abstract void DecodeControllerData(State state);
+        public abstract void DecodeImmutableData(State state);
+
+        public abstract void EncodeData(Command command);
     }
 }

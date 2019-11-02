@@ -54,7 +54,7 @@ namespace Papagei.Client
             // ClientConnection.ctor
             controller.Connection.PayloadReceived += (data, length) =>
             {
-                Console.WriteLine($"data {data.Length} length {length}"); // 1203 975
+                //Console.WriteLine($"data {data.Length} length {length}"); // 1203 975
                 var reusableIncoming = _protocol.Decode(data, length);
                 if (reusableIncoming != default)
                 {
@@ -71,7 +71,7 @@ namespace Papagei.Client
                         // ClientManager.ProcessDelta
                         if (!knownEntities.TryGetValue(delta.EntityId, out var entity))
                         {
-                            Debug.Assert(delta.IsFrozen == false, "Frozen unknown entity");
+                            Debug.Assert(!delta.IsFrozen, "Frozen unknown entity");
                             if (!delta.IsFrozen)
                             {
                                 var typeCode = delta.State.TypeCode;

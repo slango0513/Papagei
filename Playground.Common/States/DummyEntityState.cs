@@ -49,54 +49,6 @@ namespace Playground
             Status = 0;
         }
 
-        public override void DecodeMutableData(BitBuffer buffer, uint flags)
-        {
-            var _flags = (Props)flags;
-            if (_flags.HasFlag(Props.X))
-            {
-                X = buffer.ReadFloat(GameCompressors.Coordinate);
-            }
-            if (_flags.HasFlag(Props.Y))
-            {
-                Y = buffer.ReadFloat(GameCompressors.Coordinate);
-            }
-            if (_flags.HasFlag(Props.Z))
-            {
-                Z = buffer.ReadFloat(GameCompressors.Coordinate);
-            }
-            if (_flags.HasFlag(Props.Angle))
-            {
-                Angle = buffer.ReadFloat(GameCompressors.Angle);
-            }
-            if (_flags.HasFlag(Props.Status))
-            {
-                Status = buffer.ReadByte();
-            }
-        }
-        public override void EncodeMutableData(BitBuffer buffer, uint flags)
-        {
-            var _flags = (Props)flags;
-            if (_flags.HasFlag(Props.X))
-            {
-                buffer.WriteFloat(GameCompressors.Coordinate, X);
-            }
-            if (_flags.HasFlag(Props.Y))
-            {
-                buffer.WriteFloat(GameCompressors.Coordinate, Y);
-            }
-            if (_flags.HasFlag(Props.Z))
-            {
-                buffer.WriteFloat(GameCompressors.Coordinate, Z);
-            }
-            if (_flags.HasFlag(Props.Angle))
-            {
-                buffer.WriteFloat(GameCompressors.Angle, Angle);
-            }
-            if (_flags.HasFlag(Props.Status))
-            {
-                buffer.WriteByte(Status);
-            }
-        }
         public override void ApplyMutableFrom(State source, uint flags)
         {
             var _other = (DummyEntityState)source;
@@ -123,20 +75,8 @@ namespace Playground
             }
         }
 
-        public override void DecodeControllerData(BitBuffer buffer) { }
-        public override void EncodeControllerData(BitBuffer buffer) { }
         public override void ApplyControllerFrom(State source) { }
 
-        public override void DecodeImmutableData(BitBuffer buffer)
-        {
-            ArchetypeId = buffer.ReadInt();
-            UserId = buffer.ReadInt();
-        }
-        public override void EncodeImmutableData(BitBuffer buffer)
-        {
-            buffer.WriteInt(ArchetypeId);
-            buffer.WriteInt(UserId);
-        }
         public override void ApplyImmutableFrom(State source)
         {
             var _other = (DummyEntityState)source;

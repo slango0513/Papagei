@@ -6,6 +6,124 @@ using System.Collections.Generic;
 
 namespace Playground
 {
+    public class ServerGameProtocol : BitBufferServerPacketProtocol
+    {
+        public ServerGameProtocol(ServerPools pools) : base(pools)
+        {
+        }
+
+        public override void EncodeControllerData(State state)
+        {
+            switch (state)
+            {
+                case MyState state_:
+                    {
+                        break;
+                    }
+                case DummyEntityState state_:
+                    {
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+        public override void EncodeImmutableData(State state)
+        {
+            switch (state)
+            {
+                case MyState state_:
+                    {
+                        _buffer.WriteInt(state_.ArchetypeId);
+                        _buffer.WriteInt(state_.UserId);
+                        break;
+                    }
+                case DummyEntityState state_:
+                    {
+                        _buffer.WriteInt(state_.ArchetypeId);
+                        _buffer.WriteInt(state_.UserId);
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+        public override void EncodeMutableData(uint flags, State state)
+        {
+            switch (state)
+            {
+                case MyState state_:
+                    {
+                        var _flags = (MyState.Props)flags;
+                        if (_flags.HasFlag(MyState.Props.X))
+                        {
+                            _buffer.WriteFloat(GameCompressors.Coordinate, state_.X);
+                        }
+                        if (_flags.HasFlag(MyState.Props.Y))
+                        {
+                            _buffer.WriteFloat(GameCompressors.Coordinate, state_.Y);
+                        }
+                        if (_flags.HasFlag(MyState.Props.Angle))
+                        {
+                            _buffer.WriteFloat(GameCompressors.Angle, state_.Angle);
+                        }
+                        if (_flags.HasFlag(MyState.Props.Status))
+                        {
+                            _buffer.WriteByte(state_.Status);
+                        }
+                        break;
+                    }
+                case DummyEntityState state_:
+                    {
+                        var _flags = (DummyEntityState.Props)flags;
+                        if (_flags.HasFlag(DummyEntityState.Props.X))
+                        {
+                            _buffer.WriteFloat(GameCompressors.Coordinate, state_.X);
+                        }
+                        if (_flags.HasFlag(DummyEntityState.Props.Y))
+                        {
+                            _buffer.WriteFloat(GameCompressors.Coordinate, state_.Y);
+                        }
+                        if (_flags.HasFlag(DummyEntityState.Props.Z))
+                        {
+                            _buffer.WriteFloat(GameCompressors.Coordinate, state_.Z);
+                        }
+                        if (_flags.HasFlag(DummyEntityState.Props.Angle))
+                        {
+                            _buffer.WriteFloat(GameCompressors.Angle, state_.Angle);
+                        }
+                        if (_flags.HasFlag(DummyEntityState.Props.Status))
+                        {
+                            _buffer.WriteByte(state_.Status);
+                        }
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+        public override void DecodeData(Command command)
+        {
+            switch (command)
+            {
+                case GameCommand command_:
+                    {
+                        command_.Up = _buffer.ReadBool();
+                        command_.Down = _buffer.ReadBool();
+                        command_.Left = _buffer.ReadBool();
+                        command_.Right = _buffer.ReadBool();
+                        command_.Action = _buffer.ReadBool();
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+    }
+
     public class ServerWorldHost
     {
         public IServiceProvider ServiceProvider { get; }
@@ -31,7 +149,7 @@ namespace Playground
                 [typeof(ServerMimicEntity)] = typeof(MyState),
             };
             var pools = new ServerPools(commandType, eventTypes, entityTypes);
-            var manager = new ServerWorld(new BitBufferServerPacketProtocol(pools), pools);
+            var manager = new ServerWorld(new ServerGameProtocol(pools), pools);
             //var manager = new ServerWorld(new MessagePackServerPacketProtocol(), pools);
             services.AddSingleton(manager);
 

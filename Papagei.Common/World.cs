@@ -244,7 +244,7 @@ namespace Papagei
             {
                 if (evnt.IsReliable)
                 {
-                    if (firstReliable.IsValid == false)
+                    if (!firstReliable.IsValid)
                     {
                         firstReliable = evnt.EventId;
                     }

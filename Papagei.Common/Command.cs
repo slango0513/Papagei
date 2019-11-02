@@ -25,9 +25,6 @@
         /// </summary>
         public Tick ClientTick { get; set; }    // Synchronized
 
-        public abstract void EncodeData(BitBuffer buffer);
-        public abstract void DecodeData(BitBuffer buffer);
-
         public bool IsNewCommand { get; set; }
     }
 }

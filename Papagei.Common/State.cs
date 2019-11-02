@@ -56,31 +56,19 @@ namespace Papagei
         public Tick RemovedTick { get; set; }       // Synchronized
         public Tick CommandAck { get; set; }        // Synchronized to Controller
 
-        // #region Client
-        public abstract void DecodeMutableData(BitBuffer buffer, uint flags);
-        [Obsolete]
-        public virtual void DecodeControllerData(BitBuffer buffer) { }
-        public abstract void DecodeImmutableData(BitBuffer buffer);
-        // #endregion
-
-        // #region Server
-        public abstract void EncodeMutableData(BitBuffer buffer, uint flags);
-        [Obsolete]
-        public virtual void EncodeControllerData(BitBuffer buffer) { }
-        public abstract void EncodeImmutableData(BitBuffer buffer);
-        // #endregion
-
-        [Obsolete]
-        public virtual void ResetControllerData() { }
-
         public abstract void ApplyMutableFrom(State source, uint flags);
         [Obsolete]
         public virtual void ApplyControllerFrom(State source) { }
         public abstract void ApplyImmutableFrom(State source);
 
+        // Server
         public abstract uint CompareMutableData(State basis);
         public abstract bool IsControllerDataEqual(State basis);
 
+        // Client
+        [Obsolete]
+        public virtual void ResetControllerData() { }
+        // Client?
         public virtual void ApplyInterpolated(State first, State second, float t) { }
 
         public void OverwriteFrom(State source)
